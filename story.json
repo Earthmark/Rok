@@ -1,0 +1,15 @@
+{
+  "scenes": {
+    "intro": {
+      "choices": {
+        "a": {
+          "type": "MoveScene",
+          "destination": "outro"
+        }
+      }
+    },
+    "outro": {
+      "choices": {}
+    }
+  }
+}
