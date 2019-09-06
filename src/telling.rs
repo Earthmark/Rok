@@ -1,7 +1,7 @@
-use super::story::Scene;
+use super::story;
 
 #[derive(Clone)]
 pub struct Telling<'a> {
-  pub scene: &'a Scene,
+  pub scene: &'a story::Scene,
   pub running: bool,
 }

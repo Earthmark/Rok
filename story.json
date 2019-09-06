@@ -1,15 +1,25 @@
 {
+  "intro": "intro",
   "scenes": {
     "intro": {
       "choices": {
         "a": {
           "type": "MoveScene",
           "destination": "outro"
+        },
+        "--exit": {
+          "type": "Exit"
         }
-      }
+      },
+      "message": "Hello!"
     },
     "outro": {
-      "choices": {}
+      "choices": {
+        "--exit": {
+          "type": "Exit"
+        }
+      },
+      "message": "Goodbye!"
     }
   }
 }

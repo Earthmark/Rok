@@ -1,61 +1,59 @@
+use super::telling;
 use serde::Deserialize;
 use std::collections::HashMap;
-use std::{error, fmt, fs, io};
+use std::{error, fs, io};
 
 use super::choice::Choice;
 
 #[derive(Deserialize)]
 pub struct Story {
+  pub intro: String,
   pub scenes: HashMap<String, Scene>,
 }
 
 #[derive(Debug)]
-pub enum StoryLoadError {
-  File(io::Error),
-  Deserialize(serde_json::Error),
+enum RokError {
+  IntroSceneNotFound,
 }
 
-impl fmt::Display for StoryLoadError {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl std::fmt::Display for RokError {
+  fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
     match self {
-      StoryLoadError::File(e) => e.fmt(f),
-      StoryLoadError::Deserialize(e) => e.fmt(f),
+      RokError::IntroSceneNotFound => {
+        f.write_str("Story must have a scene called 'intro' to start at.")
+      }
     }
   }
 }
 
-impl error::Error for StoryLoadError {
+impl error::Error for RokError {
   fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-    match self {
-      StoryLoadError::File(e) => Some(e),
-      StoryLoadError::Deserialize(e) => Some(e),
-    }
-  }
-}
-
-impl From<io::Error> for StoryLoadError {
-  fn from(err: io::Error) -> StoryLoadError {
-    StoryLoadError::File(err)
-  }
-}
-impl From<serde_json::Error> for StoryLoadError {
-  fn from(err: serde_json::Error) -> StoryLoadError {
-    StoryLoadError::Deserialize(err)
+    None
   }
 }
 
 impl Story {
-  pub fn from_file<P: AsRef<std::path::Path>>(path: P) -> Result<Story, StoryLoadError> {
+  pub fn from_file<P: AsRef<std::path::Path>>(path: P) -> Result<Story, Box<dyn error::Error>> {
     let file = fs::File::open(path)?;
     let reader = io::BufReader::new(file);
     let u = serde_json::from_reader(reader)?;
-    Result::Ok(u)
+    Ok(u)
+  }
+
+  pub fn new_telling<'a>(&'a self) -> Result<telling::Telling<'a>, Box<dyn error::Error>> {
+    let intro = self
+      .scenes
+      .get(&self.intro)
+      .ok_or(RokError::IntroSceneNotFound)?;
+    Ok(telling::Telling {
+      scene: intro,
+      running: true,
+    })
   }
 }
 
 #[derive(Deserialize)]
 pub struct Scene {
   pub choices: HashMap<String, Choice>,
-  pub arrive: Option<Choice>,
-  pub depart: Option<Choice>,
+  pub message: String,
 }
