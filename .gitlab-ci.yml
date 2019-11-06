@@ -9,5 +9,5 @@ build:
   script: cargo build --release
 
 test:
-  stage: text
+  stage: test
   script: cargo test
