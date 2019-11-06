@@ -5,7 +5,7 @@ use std::{error, fs, io};
 /// The story to be told.
 #[derive(Deserialize, PartialEq, Debug)]
 pub struct Story {
-  /// The introduction scene in the story.
+  /// The name of the first scene in the story.
   pub intro: String,
   /// The scenes in the story.
   pub scenes: HashMap<String, Scene>,
@@ -18,6 +18,10 @@ impl Story {
     let reader = io::BufReader::new(file);
     let u = serde_json::from_reader(reader)?;
     Ok(u)
+  }
+
+  pub fn validate(&self) -> Option<Box<dyn error::Error>> {
+    None
   }
 }
 
@@ -43,6 +47,11 @@ pub enum Choice {
 #[cfg(test)]
 mod tests {
   use super::*;
+
+  #[test]
+  fn bad_test() {
+    assert_eq!("a", "b");
+  }
 
   #[test]
   fn deserialize_empty() {
