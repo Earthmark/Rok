@@ -19,10 +19,6 @@ impl Story {
     let u = serde_json::from_reader(reader)?;
     Ok(u)
   }
-
-  pub fn validate(&self) -> Option<Box<dyn error::Error>> {
-    None
-  }
 }
 
 /// A scene in the story, such as a room, or a point in a conversation.
@@ -47,11 +43,6 @@ pub enum Choice {
 #[cfg(test)]
 mod tests {
   use super::*;
-
-  #[test]
-  fn bad_test() {
-    assert_eq!("a", "b");
-  }
 
   #[test]
   fn deserialize_empty() {
